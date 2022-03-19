@@ -1,21 +1,24 @@
 <template>
   <div>
     <MyHeader />
+
+    <div style="display: flex">
+      <Aside />
+      <router-view style="flex: 1"/>
+    </div>
   </div>
-  <router-view/>
+
 </template>
-
-<style>
-
-</style>
 
 <script>
 
 import MyHeader from "./components/MyHeader";
+import Aside from "./components/Aside";
 
 export default {
   components: {
-    MyHeader
+    MyHeader,
+    Aside
   },
   name: "Layout"
 }
