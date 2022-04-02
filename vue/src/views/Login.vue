@@ -35,6 +35,9 @@ export default {
             type: "success",
             message: "登录成功"
           })
+          console.log("登录成功，存储的数据是：" + res.data)
+          //缓存用户信息
+          sessionStorage.setItem("user",JSON.stringify(res.data))
           this.$router.push("/") //登录成功之后进行页面跳转，到首页
         } else {
           this.$message({

@@ -46,7 +46,7 @@ public class UserController {
         if (res == null) {
             return Result.error("-1","用户名或密码错误");
         }
-        return Result.success();
+        return Result.success(res);
     }
 
     @PostMapping
