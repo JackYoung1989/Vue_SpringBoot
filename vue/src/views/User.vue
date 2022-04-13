@@ -15,19 +15,11 @@
 
     <el-table :data="tableData" stripe border style="width: 100%;">
       <el-table-column prop="id" label="ID" sortable/>
-      <el-table-column prop="name" label="名字" />
-      <el-table-column prop="price" label="价格" />//后台如果是下划线，前台对应驼峰，mybatis plus框架做的
-      <el-table-column prop="author" label="作者" />
-      <el-table-column prop="createTime" label="出版时间" />
-      <el-table-column label="封面">
-        <template #default="scope">
-          <el-image style="width: 50px; height: 50px"
-                    :src="scope.row.cover"
-                    :preview-src-list="[scope.row.cover]">
-
-          </el-image>
-        </template>
-      </el-table-column>
+      <el-table-column prop="username" label="用户名" />
+      <el-table-column prop="nickName" label="昵称" />//后台如果是下划线，前台对应驼峰，mybatis plus框架做的
+      <el-table-column prop="age" label="年龄" />
+      <el-table-column prop="sex" label="性别" />
+      <el-table-column prop="address" label="地址" />
       <el-table-column fixed="right" label="操作">
         <template #default="scope">
           <el-button size="small" @click="handleEdit(scope.row)">编辑</el-button>
@@ -57,22 +49,22 @@
 
   <el-dialog v-model="dialogVisible" title="Tips" width="30%" >
     <el-form :model="form" label-width="120px"> <!-- form绑定一个model = "form" -->
-      <el-form-item label="名称" >
-        <el-input v-model="form.name" style="width: 80%"/>
+      <el-form-item label="用户名" >
+        <el-input v-model="form.username" style="width: 80%"/>
       </el-form-item>
-      <el-form-item label="价格" >
-        <el-input v-model="form.price" style="width: 80%"/>
+      <el-form-item label="昵称" >
+        <el-input v-model="form.nickName" style="width: 80%"/>
       </el-form-item>
-      <el-form-item label="作者">
-        <el-input v-model="form.author"  style="width: 80%"/>
+      <el-form-item label="年龄">
+        <el-input v-model="form.age"  style="width: 80%"/>
       </el-form-item>
-      <el-form-item label="出版时间">
-        <el-date-picker value-format="YYYY-MM-DD" type="date" v-model="form.createTime" style="width: 80%" clearable></el-date-picker>
+      <el-form-item label="性别" style="width: 80%">
+        <el-radio v-model="form.sex" label="男" size="large">男</el-radio>
+        <el-radio v-model="form.sex" label="女" size="large">女</el-radio>
+        <el-radio v-model="form.sex" label="未知" size="large">未知</el-radio>
       </el-form-item>
-      <el-form-item label="封面">
-        <el-upload ref="upload" action="http://localhost:9090/files/upload" :on-success="filesUploadSuccess">
-          <el-button type="primary">点击上传</el-button>
-        </el-upload>
+      <el-form-item label="地址">
+        <el-input type="textarea" v-model="form.address" style="width: 80%" />
       </el-form-item>
     </el-form>
     <template #footer>
@@ -98,14 +90,9 @@ export default {
     this.load()
   },
   methods: {
-
-    filesUploadSuccess(response) {
-      console.log(" 上传成功啦 " + response.data);
-      this.form.cover = response.data
-    },
     delete2(id) {
       console.log("delete")
-      request.delete("/book/" + id).then(res => {
+      request.delete("/user/" + id).then(res => {
         if (res.code == "0") {
           this.$message({
             type : "success",
@@ -121,12 +108,12 @@ export default {
       })
     },
     load() {
-      request.get("/book", {
+      request.get("/user", {
         params: {
           pageNum: this.currentPage, pageSize: this.pageSize, search: this.search
         }
       }).then(res => {
-        console.log("load方法返回的数据" + res)
+        console.log(res)
         this.tableData = res.data.records
         this.total = res.data.total
       })
@@ -134,21 +121,19 @@ export default {
     add() {
       this.dialogVisible = true;
       this.form = {};
-      this.$refs['upload'].clearFiles()//清除历史内容
     },
     save() {
-      console.log("保存之前的form：" + this.form)
       if (this.form.id) {// 更新
-        request.put("/book", this.form).then(res => {
-          console.log("更新之后的结果是：" + res + " res.code=" + res.code)
-          if (res.code == 0) {
+        request.put("/user", this.form).then(res => {
+          console.log(res)
+          if (!res.code) {
             this.$message({
               type: "success",
               message: "更新成功"
             })
           } else {
             this.$message({
-              type: "error",
+              type: "failed",
               message: "更新失败"
             })
           }
@@ -156,9 +141,8 @@ export default {
           this.dialogVisible = false
         })
       } else {
-        request.post("/book", this.form).then(res => {
+        request.post("/user", this.form).then(res => {
           console.log(res)
-          console.log("返回的数据是：" + res.data)
           if (!res.data) {
             this.$message({
               type: "success",
@@ -178,9 +162,6 @@ export default {
     handleEdit(row) {
       this.form = JSON.parse(JSON.stringify(row));
       this.dialogVisible = true;
-      this.$nextTick(() => {
-        this.$refs['upload'].clearFiles()//清除历史内容
-      })
     },
     handleSizeChange() {
       this.load()

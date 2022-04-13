@@ -29,6 +29,7 @@ export default {
   },
   methods: {
     login() {
+      console.log("走了login方法");
       request.post("/user/login", this.form).then(res => {
         if (res.code === "0") {
           this.$message({
